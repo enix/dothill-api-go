@@ -5,7 +5,8 @@
   "author": "Arthur Chaloin",
   "license": "MIT",
   "dependencies": {
-    "express": "^4.16.4"
+    "express": "^4.16.4",
+    "md5": "^2.2.1"
   },
   "scripts": {
     "start": "node index.js"
