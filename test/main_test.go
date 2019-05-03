@@ -18,6 +18,11 @@ func assert(t *testing.T, cond bool, msg string) {
 	}
 }
 
+func TestInvalidURL(t *testing.T) {
+	_, _, err := client.Request(&dothill.Request{Endpoint: "/trololol"})
+	assert(t, err != nil, "it should return an error")
+}
+
 func TestInvalidXML(t *testing.T) {
 	_, _, err := client.Request(&dothill.Request{Endpoint: "/invalid/xml"})
 	assert(t, err != nil, "it should return an error")
