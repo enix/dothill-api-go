@@ -1,17 +1,27 @@
 package dothill
 
-// ShowDisks : /show/disks API call
-func (client *Client) ShowDisks() (*TestModel, *ResponseStatus, error) {
-	res := &TestModel{}
-	status, err := client.requestAndConvert(res, &Request{Endpoint: "/create/vdisk"})
-	return res, status, err
+import (
+	"crypto/md5"
+	"fmt"
+)
+
+// Login : Must be called before any other route, authentitcate to the API
+func (client *Client) Login() error {
+	userpass := fmt.Sprintf("%s_%s", client.Options.Username, client.Options.Password)
+	hash := md5.Sum([]byte(userpass))
+	res, _, err := client.Request(&Request{Endpoint: fmt.Sprintf("/login/%x", hash)})
+
+	if err != nil {
+		return err
+	}
+
+	client.sessionKey = res.objectsMap["status"].propertiesMap["response"].Data
+	return nil
 }
 
-// type loginOutput struct{}
-
-// func (client *Client) login() (string, error) {
-// 	userpass := fmt.Sprintf("%s_%s", client.Options.Username, client.Options.Password)
-// 	err := client.Request()
-// 	md5.Sum([]byte(userpass))
-// 	return "", nil
-// }
+// TestCall : test call for mock API
+func (client *Client) TestCall() (*TestModel, *ResponseStatus, error) {
+	res := &TestModel{}
+	status, err := client.requestAndConvert(res, &Request{Endpoint: "/create/vdisk/level/r5/disks/2.6,2.7,2.8/vd-1"})
+	return res, status, err
+}

@@ -9,14 +9,20 @@ import (
 
 var client, _ = dothill.NewClient(&dothill.Options{
 	Addr:     "http://mock:8080",
-	Username: "aze",
-	Password: "aze",
+	Username: "manage",
+	Password: "!manage",
 })
 
 func assert(t *testing.T, cond bool, msg string) {
 	if !cond {
 		t.Errorf(msg)
+	} else {
+		fmt.Printf("%s: OK\n", msg)
 	}
+}
+
+func TestLogin(t *testing.T) {
+	assert(t, client.Login() == nil, "login should succeed")
 }
 
 func TestInvalidURL(t *testing.T) {
@@ -31,7 +37,13 @@ func TestInvalidXML(t *testing.T) {
 
 func TestStatusCodeNotZero(t *testing.T) {
 	_, status, err := client.Request(&dothill.Request{Endpoint: "/status/code/1"})
-	fmt.Println(err)
 	assert(t, err != nil, "it should return an error")
 	assert(t, status.ReturnCode == 1, "it should return the status code 1 to the user")
+}
+
+func TestValidCall(t *testing.T) {
+	res, status, err := client.TestCall()
+	assert(t, err == nil, "it should not return an error")
+	assert(t, status.ReturnCode == 0, "it should return status code 0")
+	assert(t, res.Data == "Command completed successfully. (vd-1) - The vdisk was created.", "it should return the correct message")
 }

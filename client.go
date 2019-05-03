@@ -28,14 +28,7 @@ func NewClient(options *Options) (*Client, error) {
 		return nil, errors.New("please provide a password")
 	}
 
-	client := &Client{Options: options}
-	// sessionKey, err := client.login()
-	// if err != nil {
-	// 	return nil, err
-	// }
-
-	// client.sessionKey = sessionKey
-	return client, nil
+	return &Client{Options: options}, nil
 }
 
 // Request : Execute the given request with client's configuration
@@ -67,6 +60,6 @@ func (client *Client) requestAndConvert(model model, req *Request) (*ResponseSta
 	if err != nil {
 		return status, err
 	}
-	model.FillFromResponse(res)
+	model.fillFromResponse(res)
 	return status, nil
 }
