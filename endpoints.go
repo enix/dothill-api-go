@@ -1,24 +1,10 @@
 package dothill
 
-// ShowDisksOutput : Typed Go representation of the /show/disks API call response
-type ShowDisksOutput struct {
-	Data string
-}
-
 // ShowDisks : /show/disks API call
-func (client *Client) ShowDisks() (*ShowDisksOutput, *ResponseStatus, error) {
-	res, status, err := client.Request(&Request{
-		Endpoint: "/show/disks",
-	})
-	if err != nil {
-		return nil, status, err
-	}
-
-	out := &ShowDisksOutput{
-		Data: res.objectsMap["status"].propertiesMap["response"].Data,
-	}
-
-	return out, status, nil
+func (client *Client) ShowDisks() (*TestModel, *ResponseStatus, error) {
+	res := &TestModel{}
+	status, err := client.requestAndConvert(res, &Request{Endpoint: "/create/vdisk"})
+	return res, status, err
 }
 
 // type loginOutput struct{}

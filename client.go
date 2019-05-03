@@ -61,3 +61,12 @@ func (client *Client) Request(req *Request) (*Response, *ResponseStatus, error) 
 
 	return res, status, nil
 }
+
+func (client *Client) requestAndConvert(model model, req *Request) (*ResponseStatus, error) {
+	res, status, err := client.Request(req)
+	if err != nil {
+		return status, err
+	}
+	model.FillFromResponse(res)
+	return status, nil
+}
