@@ -1,5 +1,5 @@
 test:
-  image: docker:stable
+  image: docker/compose:1.24.0
   services:
     - docker:dind
   script:
