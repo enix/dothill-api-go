@@ -3,4 +3,4 @@ test:
   services:
     - docker:dind
   script:
-    - docker build .
+    - docker-compose up --build --abort-on-container-exit --exit-code-from tests

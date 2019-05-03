@@ -14,7 +14,7 @@ endpoints.forEach(endpoint => app.get(`/api/${endpoint}`, (_, res) => {
 
   while (path.length) {
     try {
-      rawData = fs.readFileSync(`../data/${path.join('_')}.xml`);
+      rawData = fs.readFileSync(`data/${path.join('_')}.xml`);
       break;
     }
     catch (e) {
