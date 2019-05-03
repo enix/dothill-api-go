@@ -10,7 +10,6 @@ type Options struct {
 	Username string
 	Password string
 	Addr     string
-	Port     int16
 }
 
 // Client : Can be used to request the dothill API
@@ -29,7 +28,7 @@ func NewClient(options *Options) (*Client, error) {
 		return nil, errors.New("please provide a password")
 	}
 
-	client := &Client{}
+	client := &Client{Options: options}
 	// sessionKey, err := client.login()
 	// if err != nil {
 	// 	return nil, err
