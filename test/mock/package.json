@@ -1,0 +1,13 @@
+{
+  "name": "dothill-api-mock-server",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "Arthur Chaloin",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.16.4"
+  },
+  "scripts": {
+    "start": "node index.js"
+  }
+}
