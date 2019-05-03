@@ -1,0 +1,6 @@
+test:
+  image: docker:stable
+  services:
+    - docker:dind
+  script:
+    - docker build .
