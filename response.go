@@ -3,6 +3,7 @@ package dothill
 import (
 	"encoding/xml"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -47,7 +48,10 @@ type ResponseStatus struct {
 // and generate a hash map from fields for optimization
 func NewResponse(data []byte) (*Response, error) {
 	res := &Response{}
-	xml.Unmarshal(data, res)
+	err := xml.Unmarshal(data, res)
+	if err != nil {
+		return nil, err
+	}
 
 	res.objectsMap = make(map[string]*Object)
 	for idx := range res.Objects {
@@ -56,6 +60,7 @@ func NewResponse(data []byte) (*Response, error) {
 		res.objectsMap[obj.Name] = obj
 		for idx2 := range obj.Properties {
 			prop := &obj.Properties[idx2]
+			prop.Data = strings.TrimSpace(prop.Data)
 			obj.propertiesMap[prop.Name] = prop
 		}
 	}
