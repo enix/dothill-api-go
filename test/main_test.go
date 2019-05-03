@@ -1,28 +1,30 @@
 package dothill_test
 
 import (
-	"fmt"
 	"testing"
 
 	"enix.io/dothill-api-go"
 )
 
+var client, _ = dothill.NewClient(&dothill.Options{
+	Addr:     "http://localhost:8080",
+	Username: "aze",
+	Password: "aze",
+})
+
 func assert(t *testing.T, cond bool, msg string) {
 	if !cond {
 		t.Errorf(msg)
-	} else {
-		fmt.Printf("%s:\tOK\n", msg)
 	}
 }
 
-func TestE2E(t *testing.T) {
-	client, _ := dothill.NewClient(&dothill.Options{
-		Username: "aze",
-		Password: "aze",
-	})
+func TestInvalidXML(t *testing.T) {
+	_, _, err := client.Request(&dothill.Request{Endpoint: "/invalid/xml"})
+	assert(t, err != nil, "it should return an error")
+}
 
-	res, status, err := client.ShowDisks()
-	assert(t, res != nil, "it should return something")
-	assert(t, err == nil, "it should not return an error")
-	assert(t, status.ReturnCode == 0, "it should return 0 status code")
+func TestStatusCodeNotZero(t *testing.T) {
+	_, status, err := client.Request(&dothill.Request{Endpoint: "/status/code/1"})
+	assert(t, err != nil, "it should return an error")
+	assert(t, status.ReturnCode == 1, "it should return the status code 1 to the user")
 }
