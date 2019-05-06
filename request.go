@@ -14,7 +14,7 @@ type Request struct {
 
 func (req *Request) execute(client *Client) ([]byte, error) {
 	httpClient := &http.Client{}
-	url := fmt.Sprintf("%s/api%s", client.Options.Addr, req.Endpoint)
+	url := fmt.Sprintf("%s/api%s", client.Addr, req.Endpoint)
 	httpReq, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return nil, err

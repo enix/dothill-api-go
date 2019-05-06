@@ -4,16 +4,11 @@ import (
 	"fmt"
 )
 
-// Options : Client configuration, including authentication credentials
-type Options struct {
-	Username string
-	Password string
-	Addr     string
-}
-
 // Client : Can be used to request the dothill API
 type Client struct {
-	Options    *Options
+	Username   string
+	Password   string
+	Addr       string
 	sessionKey string
 }
 

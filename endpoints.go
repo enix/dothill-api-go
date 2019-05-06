@@ -7,7 +7,7 @@ import (
 
 // Login : Must be called before any other route, authentitcate to the API
 func (client *Client) Login() error {
-	userpass := fmt.Sprintf("%s_%s", client.Options.Username, client.Options.Password)
+	userpass := fmt.Sprintf("%s_%s", client.Username, client.Password)
 	hash := md5.Sum([]byte(userpass))
 	res, _, err := client.Request(&Request{Endpoint: fmt.Sprintf("/login/%x", hash)})
 

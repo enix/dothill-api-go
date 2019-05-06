@@ -8,11 +8,9 @@ import (
 )
 
 var client = &dothill.Client{
-	Options: &dothill.Options{
-		Addr:     "http://mock:8080",
-		Username: "manage",
-		Password: "!manage",
-	},
+	Addr:     "http://mock:8080",
+	Username: "manage",
+	Password: "!manage",
 }
 
 func assert(t *testing.T, cond bool, msg string) {
