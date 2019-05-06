@@ -7,11 +7,13 @@ import (
 	"enix.io/dothill-api-go"
 )
 
-var client, _ = dothill.NewClient(&dothill.Options{
-	Addr:     "http://mock:8080",
-	Username: "manage",
-	Password: "!manage",
-})
+var client = &dothill.Client{
+	Options: &dothill.Options{
+		Addr:     "http://mock:8080",
+		Username: "manage",
+		Password: "!manage",
+	},
+}
 
 func assert(t *testing.T, cond bool, msg string) {
 	if !cond {

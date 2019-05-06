@@ -1,7 +1,6 @@
 package dothill
 
 import (
-	"errors"
 	"fmt"
 )
 
@@ -16,19 +15,6 @@ type Options struct {
 type Client struct {
 	Options    *Options
 	sessionKey string
-}
-
-// NewClient : Create a client from the given options
-func NewClient(options *Options) (*Client, error) {
-	if len(options.Username) < 1 {
-		return nil, errors.New("please provide a username")
-	}
-
-	if len(options.Password) < 1 {
-		return nil, errors.New("please provide a password")
-	}
-
-	return &Client{Options: options}, nil
 }
 
 // Request : Execute the given request with client's configuration
