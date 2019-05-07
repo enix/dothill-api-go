@@ -26,17 +26,17 @@ func TestLogin(t *testing.T) {
 }
 
 func TestInvalidURL(t *testing.T) {
-	_, _, err := client.Request(&dothill.Request{Endpoint: "/trololol"})
+	_, _, err := client.Request("/trololol")
 	assert(t, err != nil, "it should return an error")
 }
 
 func TestInvalidXML(t *testing.T) {
-	_, _, err := client.Request(&dothill.Request{Endpoint: "/invalid/xml"})
+	_, _, err := client.Request("/invalid/xml")
 	assert(t, err != nil, "it should return an error")
 }
 
 func TestStatusCodeNotZero(t *testing.T) {
-	_, status, err := client.Request(&dothill.Request{Endpoint: "/status/code/1"})
+	_, status, err := client.Request("/status/code/1")
 	assert(t, err != nil, "it should return an error")
 	assert(t, status.ReturnCode == 1, "it should return the status code 1 to the user")
 }

@@ -13,7 +13,11 @@ type Client struct {
 }
 
 // Request : Execute the given request with client's configuration
-func (client *Client) Request(req *Request) (*Response, *ResponseStatus, error) {
+func (client *Client) Request(endpoint string) (*Response, *ResponseStatus, error) {
+	return client.request(&Request{Endpoint: endpoint})
+}
+
+func (client *Client) request(req *Request) (*Response, *ResponseStatus, error) {
 	raw, err := req.execute(client)
 	if err != nil {
 		return nil, nil, err
@@ -36,8 +40,8 @@ func (client *Client) Request(req *Request) (*Response, *ResponseStatus, error) 
 	return res, status, nil
 }
 
-func (client *Client) requestAndConvert(model model, req *Request) (*ResponseStatus, error) {
-	res, status, err := client.Request(req)
+func (client *Client) requestAndConvert(model model, endpoint string) (*ResponseStatus, error) {
+	res, status, err := client.Request(endpoint)
 	if err != nil {
 		return status, err
 	}
