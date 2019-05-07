@@ -33,7 +33,7 @@ func (client *Client) request(req *Request) (*Response, *ResponseStatus, error) 
 	}
 
 	status := res.GetStatus()
-	if status.ReturnCode != 0 {
+	if status.ResponseTypeNumeric != 0 {
 		return res, status, fmt.Errorf("API returned non-zero code %d", status.ReturnCode)
 	}
 
