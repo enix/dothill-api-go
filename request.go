@@ -1,6 +1,7 @@
 package dothill
 
 import (
+	"crypto/tls"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -13,7 +14,14 @@ type Request struct {
 }
 
 func (req *Request) execute(client *Client) ([]byte, error) {
-	httpClient := &http.Client{}
+	httpClient := &http.Client{
+		Transport: &http.Transport{
+			TLSClientConfig: &tls.Config{
+				InsecureSkipVerify: true,
+			},
+		},
+	}
+
 	url := fmt.Sprintf("%s/api%s", client.Addr, req.Endpoint)
 	httpReq, err := http.NewRequest("GET", url, nil)
 	if err != nil {
