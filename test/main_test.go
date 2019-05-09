@@ -38,7 +38,7 @@ func TestInvalidXML(t *testing.T) {
 func TestStatusCodeNotZero(t *testing.T) {
 	_, status, err := client.Request("/status/code/1")
 	assert(t, err != nil, "it should return an error")
-	assert(t, status.ReturnCode == 1, "it should return the status code 1 to the user")
+	assert(t, status.ResponseTypeNumeric == 1, "it should return the status code 1 to the user")
 }
 
 // func TestValidCall(t *testing.T) {

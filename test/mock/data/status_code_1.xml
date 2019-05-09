@@ -5,7 +5,7 @@
 			Error
 		</PROPERTY>
 		<PROPERTY name="response-type-numeric" type="uint32" size="12" draw="false" sort="nosort" display-name="Response Type">
-			0
+			1
 		</PROPERTY>
 		<PROPERTY name="response" type="string" size="180" draw="true" sort="nosort" display-name="Response">
 			Command completed successfully. (vd-1) - The vdisk was created.
