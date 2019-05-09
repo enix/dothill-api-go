@@ -41,6 +41,11 @@ func (client *Client) UnmapVolume(name, host string) (*Response, *ResponseStatus
 	return client.Request(fmt.Sprintf("/unmap/volume/host/\"%s\"/\"%s\"", host, name))
 }
 
+// DeleteVolume : deletes a volume
+func (client *Client) DeleteVolume(name string) (*Response, *ResponseStatus, error) {
+	return client.Request(fmt.Sprintf("/delete/volumes/\"%s\"", name))
+}
+
 // ShowHostMaps : list the volume mappings for given host
 func (client *Client) ShowHostMaps(host string) ([]Volume, *ResponseStatus, error) {
 	res, status, err := client.Request(fmt.Sprintf("/show/host-maps/\"%s\"", host))
