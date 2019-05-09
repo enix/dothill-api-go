@@ -32,8 +32,8 @@ func (client *Client) CreateVolume(name, size, pool string) (*Response, *Respons
 }
 
 // MapVolume : map a volume to host + LUN
-func (client *Client) MapVolume(name, host string, lun int) (*Response, *ResponseStatus, error) {
-	return client.Request(fmt.Sprintf("/map/volume/access/rw/lun/%d/host/%s/\"%s\"", lun, host, name))
+func (client *Client) MapVolume(name, host, access string, lun int) (*Response, *ResponseStatus, error) {
+	return client.Request(fmt.Sprintf("/map/volume/access/%s/lun/%d/host/%s/\"%s\"", access, lun, host, name))
 }
 
 // UnmapVolume : unmap a volume from host
