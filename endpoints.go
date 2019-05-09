@@ -50,6 +50,9 @@ func (client *Client) DeleteVolume(name string) (*Response, *ResponseStatus, err
 func (client *Client) ShowHostMaps(host string) ([]Volume, *ResponseStatus, error) {
 	res, status, err := client.Request(fmt.Sprintf("/show/host-maps/\"%s\"", host))
 	hostView := res.ObjectsMap["host-view"]
+	if hostView == nil {
+		return make([]Volume, 0), status, err
+	}
 	mappings := make([]Volume, 0, len(hostView.Objects))
 
 	for _, object := range hostView.Objects {
