@@ -1,15 +1,23 @@
 package dothill
 
+import "strconv"
+
 // model : interface to allow generic conversion from raw response to user-object
 type model interface {
-	fillFromResponse(res *Response)
+	fillFromObject(obj *Object) error
 }
 
-// TestModel : used for internal tests purposes
-type TestModel struct {
-	Data string
+// Volume : volume-view representation
+type Volume struct {
+	LUN int
 }
 
-func (m *TestModel) fillFromResponse(res *Response) {
-	m.Data = res.objectsMap["status"].propertiesMap["response"].Data
+func (m *Volume) fillFromObject(obj *Object) error {
+	lun, err := strconv.Atoi(obj.PropertiesMap["lun"].Data)
+	if err != nil {
+		return err
+	}
+
+	m.LUN = lun
+	return nil
 }

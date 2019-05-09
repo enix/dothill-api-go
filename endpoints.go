@@ -35,3 +35,20 @@ func (client *Client) CreateVolume(name, size, pool string) (*Response, *Respons
 func (client *Client) MapVolume(name, host string, lun int) (*Response, *ResponseStatus, error) {
 	return client.Request(fmt.Sprintf("/map/volume/access/rw/lun/%d/host/%s/\"%s\"", lun, host, name))
 }
+
+// ShowHostMaps : list the volume mappings for given host
+func (client *Client) ShowHostMaps(host string) ([]Volume, *ResponseStatus, error) {
+	res, status, err := client.Request(fmt.Sprintf("/show/host-maps/\"%s\"", host))
+	hostView := res.ObjectsMap["host-view"]
+	mappings := make([]Volume, 0, len(hostView.Objects))
+
+	for _, object := range hostView.Objects {
+		if object.Name == "volume-view" {
+			vol := Volume{}
+			vol.fillFromObject(&object)
+			mappings = append(mappings, vol)
+		}
+	}
+
+	return mappings, status, err
+}
