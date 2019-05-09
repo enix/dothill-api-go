@@ -11,7 +11,7 @@ import (
 type Response struct {
 	Version    string   `xml:"VERSION,attr"`
 	Objects    []Object `xml:"OBJECT"`
-	objectsMap map[string]*Object
+	ObjectsMap map[string]*Object
 }
 
 // Object : Typed representation of any XML API object
@@ -20,8 +20,10 @@ type Object struct {
 	Name          string     `xml:"name,attr"`
 	OID           int32      `xml:"oid,attr"`
 	Format        string     `xml:"format,attr,omitempty"`
+	Objects       []Object   `xml:"OBJECT"`
 	Properties    []Property `xml:"PROPERTY"`
-	propertiesMap map[string]*Property
+	ObjectsMap    map[string]*Object
+	PropertiesMap map[string]*Property
 }
 
 // Property : Typed representation of any XML API property
@@ -53,16 +55,11 @@ func NewResponse(data []byte) (*Response, error) {
 		return nil, err
 	}
 
-	res.objectsMap = make(map[string]*Object)
+	res.ObjectsMap = make(map[string]*Object)
 	for idx := range res.Objects {
 		obj := &res.Objects[idx]
-		obj.propertiesMap = make(map[string]*Property)
-		res.objectsMap[obj.Name] = obj
-		for idx2 := range obj.Properties {
-			prop := &obj.Properties[idx2]
-			prop.Data = strings.TrimSpace(prop.Data)
-			obj.propertiesMap[prop.Name] = prop
-		}
+		fillObjectMap(obj)
+		res.ObjectsMap[obj.Name] = obj
 	}
 
 	return res, nil
@@ -71,16 +68,33 @@ func NewResponse(data []byte) (*Response, error) {
 // GetStatus : Creates and returns the final ResponseStatus struct
 // from the raw status object in response
 func (res *Response) GetStatus() *ResponseStatus {
-	statusObject := res.objectsMap["status"]
-	responseTypeNumeric, _ := strconv.Atoi(statusObject.propertiesMap["response-type-numeric"].Data)
-	returnCode, _ := strconv.Atoi(statusObject.propertiesMap["return-code"].Data)
-	timestampNumeric, _ := strconv.Atoi(statusObject.propertiesMap["time-stamp-numeric"].Data)
+	statusObject := res.ObjectsMap["status"]
+	responseTypeNumeric, _ := strconv.Atoi(statusObject.PropertiesMap["response-type-numeric"].Data)
+	returnCode, _ := strconv.Atoi(statusObject.PropertiesMap["return-code"].Data)
+	timestampNumeric, _ := strconv.Atoi(statusObject.PropertiesMap["time-stamp-numeric"].Data)
 
 	return &ResponseStatus{
-		ResponseType:        statusObject.propertiesMap["response-type"].Data,
+		ResponseType:        statusObject.PropertiesMap["response-type"].Data,
 		ResponseTypeNumeric: responseTypeNumeric,
-		Response:            statusObject.propertiesMap["response"].Data,
+		Response:            statusObject.PropertiesMap["response"].Data,
 		ReturnCode:          returnCode,
 		Time:                time.Unix(int64(timestampNumeric), 0),
+	}
+}
+
+func fillObjectMap(obj *Object) {
+	obj.PropertiesMap = make(map[string]*Property)
+
+	for idx2 := range obj.Properties {
+		prop := &obj.Properties[idx2]
+		prop.Data = strings.TrimSpace(prop.Data)
+		obj.PropertiesMap[prop.Name] = prop
+	}
+
+	obj.ObjectsMap = make(map[string]*Object)
+	for idx2 := range obj.Objects {
+		subObject := &obj.Objects[idx2]
+		fillObjectMap(subObject)
+		obj.ObjectsMap[subObject.Name] = subObject
 	}
 }
