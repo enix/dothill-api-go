@@ -2,6 +2,8 @@ package dothill
 
 import (
 	"fmt"
+	"log"
+	"strings"
 )
 
 // Client : Can be used to request the dothill API
@@ -18,6 +20,10 @@ func (client *Client) Request(endpoint string) (*Response, *ResponseStatus, erro
 }
 
 func (client *Client) request(req *Request) (*Response, *ResponseStatus, error) {
+	if !strings.Contains(req.Endpoint, "login") {
+		log.Printf("GET %s\n", req.Endpoint)
+	}
+
 	raw, err := req.execute(client)
 	if err != nil {
 		return nil, nil, err
