@@ -31,6 +31,11 @@ func (client *Client) CreateVolume(name, size, pool string) (*Response, *Respons
 	return client.Request(fmt.Sprintf("/create/volume/pool/\"%s\"/size/%s/tier-affinity/no-affinity/\"%s\"", pool, size, name))
 }
 
+// CreateHost : creates a host
+func (client *Client) CreateHost(name, iqn string) (*Response, *ResponseStatus, error) {
+	return client.Request(fmt.Sprintf("/create/host/id/\"%s\"/\"%s\"", iqn, name))
+}
+
 // MapVolume : map a volume to host + LUN
 func (client *Client) MapVolume(name, host, access string, lun int) (*Response, *ResponseStatus, error) {
 	return client.Request(fmt.Sprintf("/map/volume/access/%s/lun/%d/host/%s/\"%s\"", access, lun, host, name))
