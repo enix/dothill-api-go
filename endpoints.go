@@ -36,6 +36,11 @@ func (client *Client) MapVolume(name, host string, lun int) (*Response, *Respons
 	return client.Request(fmt.Sprintf("/map/volume/access/rw/lun/%d/host/%s/\"%s\"", lun, host, name))
 }
 
+// UnmapVolume : unmap a volume from host
+func (client *Client) UnmapVolume(name, host string) (*Response, *ResponseStatus, error) {
+	return client.Request(fmt.Sprintf("/unmap/volume/host/\"%s\"/\"%s\"", host, name))
+}
+
 // ShowHostMaps : list the volume mappings for given host
 func (client *Client) ShowHostMaps(host string) ([]Volume, *ResponseStatus, error) {
 	res, status, err := client.Request(fmt.Sprintf("/show/host-maps/\"%s\"", host))
