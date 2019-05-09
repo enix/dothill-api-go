@@ -41,9 +41,9 @@ func TestStatusCodeNotZero(t *testing.T) {
 	assert(t, status.ReturnCode == 1, "it should return the status code 1 to the user")
 }
 
-func TestValidCall(t *testing.T) {
-	res, status, err := client.TestCall()
-	assert(t, err == nil, "it should not return an error")
-	assert(t, status.ReturnCode == 0, "it should return status code 0")
-	assert(t, res.Data == "Command completed successfully. (vd-1) - The vdisk was created.", "it should return the correct message")
-}
+// func TestValidCall(t *testing.T) {
+// 	res, status, err := client.TestCall()
+// 	assert(t, err == nil, "it should not return an error")
+// 	assert(t, status.ReturnCode == 0, "it should return status code 0")
+// 	assert(t, res.Data == "Command completed successfully. (vd-1) - The vdisk was created.", "it should return the correct message")
+// }

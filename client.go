@@ -29,6 +29,7 @@ func (client *Client) request(req *Request) (*Response, *ResponseStatus, error) 
 		return nil, nil, err
 	}
 
+	// fmt.Println(string(raw))
 	res, err := NewResponse(raw)
 	if err != nil {
 		if res != nil {
@@ -46,11 +47,11 @@ func (client *Client) request(req *Request) (*Response, *ResponseStatus, error) 
 	return res, status, nil
 }
 
-func (client *Client) requestAndConvert(model model, endpoint string) (*ResponseStatus, error) {
-	res, status, err := client.Request(endpoint)
-	if err != nil {
-		return status, err
-	}
-	model.fillFromResponse(res)
-	return status, nil
-}
+// func (client *Client) requestAndConvert(model model, endpoint string) (*ResponseStatus, error) {
+// 	res, status, err := client.Request(endpoint)
+// 	if err != nil {
+// 		return status, err
+// 	}
+// 	model.fillFromResponse(res)
+// 	return status, nil
+// }
