@@ -1,0 +1,23 @@
+stages:
+  - test
+  - release
+
+test:
+  stage: test
+  image:
+    name: docker/compose:1.24.0
+    entrypoint: ["/bin/sh", "-c"]
+  services:
+    - docker:dind
+  script:
+    - docker-compose up --build --abort-on-container-exit --exit-code-from tests
+
+semantic-release:
+  stage: release
+  image: enix/semantic-release:gitlab
+  script:
+    - npx semantic-release --ci
+  only:
+    - master
+  except:
+    - tags
