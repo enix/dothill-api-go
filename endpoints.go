@@ -5,7 +5,7 @@ import (
 	"fmt"
 )
 
-// Login : Must be called before any other route, authentitcate to the API
+// Login : Called automatically, may be called manually if credentials changed
 func (client *Client) Login() error {
 	userpass := fmt.Sprintf("%s_%s", client.Username, client.Password)
 	hash := md5.Sum([]byte(userpass))
@@ -54,6 +54,10 @@ func (client *Client) DeleteVolume(name string) (*Response, *ResponseStatus, err
 // ShowHostMaps : list the volume mappings for given host
 func (client *Client) ShowHostMaps(host string) ([]Volume, *ResponseStatus, error) {
 	res, status, err := client.Request(fmt.Sprintf("/show/host-maps/\"%s\"", host))
+	if err != nil {
+		return nil, status, err
+	}
+
 	hostView := res.ObjectsMap["host-view"]
 	if hostView == nil {
 		return make([]Volume, 0), status, err

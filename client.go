@@ -21,6 +21,10 @@ func (client *Client) Request(endpoint string) (*Response, *ResponseStatus, erro
 
 func (client *Client) request(req *Request) (*Response, *ResponseStatus, error) {
 	if !strings.Contains(req.Endpoint, "login") {
+		if len(client.sessionKey) == 0 {
+			client.Login()
+		}
+
 		log.Printf("GET %s\n", req.Endpoint)
 	}
 
@@ -29,7 +33,6 @@ func (client *Client) request(req *Request) (*Response, *ResponseStatus, error) 
 		return nil, nil, err
 	}
 
-	// fmt.Println(string(raw))
 	res, err := NewResponse(raw)
 	if err != nil {
 		if res != nil {
@@ -41,7 +44,7 @@ func (client *Client) request(req *Request) (*Response, *ResponseStatus, error) 
 
 	status := res.GetStatus()
 	if status.ResponseTypeNumeric != 0 {
-		return res, status, fmt.Errorf("API returned non-zero code %d", status.ReturnCode)
+		return res, status, fmt.Errorf("Dothill API returned non-zero code %d (%s)", status.ReturnCode, status.Response)
 	}
 
 	return res, status, nil
