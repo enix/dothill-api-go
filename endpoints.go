@@ -19,13 +19,6 @@ func (client *Client) Login() error {
 	return nil
 }
 
-// TestCall : test call for mock API
-// func (client *Client) TestCall() (*TestModel, *ResponseStatus, error) {
-// 	res := &TestModel{}
-// 	status, err := client.requestAndConvert(res, "/create/vdisk/level/r5/disks/2.6,2.7,2.8/vd-1")
-// 	return res, status, err
-// }
-
 // CreateVolume : creates a volume with the given name, capacity in the given pool
 func (client *Client) CreateVolume(name, size, pool string) (*Response, *ResponseStatus, error) {
 	return client.Request(fmt.Sprintf("/create/volume/pool/\"%s\"/size/%s/tier-affinity/no-affinity/\"%s\"", pool, size, name))
