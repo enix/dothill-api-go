@@ -2,8 +2,9 @@ package dothill
 
 import (
 	"fmt"
-	"log"
 	"strings"
+
+	"k8s.io/klog"
 )
 
 // Client : Can be used to request the dothill API
@@ -22,10 +23,13 @@ func (client *Client) Request(endpoint string) (*Response, *ResponseStatus, erro
 func (client *Client) request(req *Request) (*Response, *ResponseStatus, error) {
 	if !strings.Contains(req.Endpoint, "login") {
 		if len(client.sessionKey) == 0 {
+			klog.V(1).Info("no session key stored, authenticating before sending request")
 			client.Login()
 		}
 
-		log.Printf("GET %s\n", req.Endpoint)
+		klog.Infof("-> GET %s", req.Endpoint)
+	} else {
+		klog.Infof("-> GET /login/<hidden>")
 	}
 
 	raw, err := req.execute(client)
@@ -43,6 +47,11 @@ func (client *Client) request(req *Request) (*Response, *ResponseStatus, error) 
 	}
 
 	status := res.GetStatus()
+	if !strings.Contains(req.Endpoint, "login") {
+		klog.Infof("<- [%d %s] %s", status.ReturnCode, status.ResponseType, status.Response)
+	} else {
+		klog.Infof("<- [%d %s] <hidden>", status.ReturnCode, status.ResponseType)
+	}
 	if status.ResponseTypeNumeric != 0 {
 		return res, status, fmt.Errorf("Dothill API returned non-zero code %d (%s)", status.ReturnCode, status.Response)
 	}
