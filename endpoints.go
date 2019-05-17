@@ -45,8 +45,12 @@ func (client *Client) DeleteVolume(name string) (*Response, *ResponseStatus, err
 }
 
 // ShowHostMaps : list the volume mappings for given host
+// If host is an empty string, mapping for all hosts is shown
 func (client *Client) ShowHostMaps(host string) ([]Volume, *ResponseStatus, error) {
-	res, status, err := client.Request(fmt.Sprintf("/show/host-maps/\"%s\"", host))
+	if len(host) > 0 {
+		host = fmt.Sprintf("\"%s\"", host)
+	}
+	res, status, err := client.Request(fmt.Sprintf("/show/host-maps/%s", host))
 	if err != nil {
 		return nil, status, err
 	}
