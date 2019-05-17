@@ -1,8 +1,11 @@
 package dothill
 
 import (
+	"crypto/tls"
 	"fmt"
+	"net/http"
 	"strings"
+	"time"
 
 	"k8s.io/klog"
 )
@@ -12,7 +15,23 @@ type Client struct {
 	Username   string
 	Password   string
 	Addr       string
+	HTTPClient http.Client
 	sessionKey string
+}
+
+// NewClient : Creates a dothill client by setting up its HTTP client
+func NewClient() *Client {
+	return &Client{
+		HTTPClient: http.Client{
+			Timeout: time.Duration(15 * time.Second),
+			Transport: &http.Transport{
+				// Proxy: http.ProxyURL(proxy),
+				TLSClientConfig: &tls.Config{
+					InsecureSkipVerify: true,
+				},
+			},
+		},
+	}
 }
 
 // Request : Execute the given request with client's configuration
