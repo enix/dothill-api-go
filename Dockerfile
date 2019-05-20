@@ -1,8 +1,8 @@
-FROM instrumentisto/dep:0.5-alpine
+FROM enix/go-dep:0.5
 
 WORKDIR /go/src/enix.io/dothill-api-go
 
-RUN apk add --update curl
+RUN apk add --update curl g++
 
 COPY *.go ./
 
