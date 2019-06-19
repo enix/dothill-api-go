@@ -40,10 +40,14 @@ func (client *Client) Request(endpoint string) (*Response, *ResponseStatus, erro
 }
 
 func (client *Client) request(req *Request) (*Response, *ResponseStatus, error) {
-	if !strings.Contains(req.Endpoint, "login") {
+	isLoginReq := strings.Contains(req.Endpoint, "login")
+	if !isLoginReq {
 		if len(client.sessionKey) == 0 {
 			klog.V(1).Info("no session key stored, authenticating before sending request")
-			client.Login()
+			err := client.Login()
+			if err != nil {
+				return nil, nil, err
+			}
 		}
 
 		klog.Infof("-> GET %s", req.Endpoint)
@@ -51,7 +55,16 @@ func (client *Client) request(req *Request) (*Response, *ResponseStatus, error) 
 		klog.Infof("-> GET /login/<hidden>")
 	}
 
-	raw, err := req.execute(client)
+	raw, code, err := req.execute(client)
+	if code == 401 && !isLoginReq {
+		klog.V(1).Info("session key may have expired, trying to re-login")
+		err = client.Login()
+		if err != nil {
+			return nil, nil, err
+		}
+		klog.V(1).Info("re-login succeed, re-trying request")
+		raw, code, err = req.execute(client)
+	}
 	if err != nil {
 		return nil, nil, err
 	}
@@ -66,7 +79,7 @@ func (client *Client) request(req *Request) (*Response, *ResponseStatus, error) 
 	}
 
 	status := res.GetStatus()
-	if !strings.Contains(req.Endpoint, "login") {
+	if !isLoginReq {
 		klog.Infof("<- [%d %s] %s", status.ReturnCode, status.ResponseType, status.Response)
 	} else {
 		klog.Infof("<- [%d %s] <hidden>", status.ReturnCode, status.ResponseType)
