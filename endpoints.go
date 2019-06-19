@@ -44,6 +44,11 @@ func (client *Client) DeleteVolume(name string) (*Response, *ResponseStatus, err
 	return client.Request(fmt.Sprintf("/delete/volumes/\"%s\"", name))
 }
 
+// DeleteHost : deletes a hotst by its ID or nickname
+func (client *Client) DeleteHost(name string) (*Response, *ResponseStatus, error) {
+	return client.Request(fmt.Sprintf("/delete/host/\"%s\"", name))
+}
+
 // ShowHostMaps : list the volume mappings for given host
 // If host is an empty string, mapping for all hosts is shown
 func (client *Client) ShowHostMaps(host string) ([]Volume, *ResponseStatus, error) {

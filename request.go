@@ -19,7 +19,6 @@ func (req *Request) execute(client *Client) ([]byte, int, error) {
 		return nil, 0, err
 	}
 
-	fmt.Println(client.sessionKey)
 	httpReq.Header.Set("sessionKey", client.sessionKey)
 	res, err := client.HTTPClient.Do(httpReq)
 	if err != nil {
