@@ -39,6 +39,11 @@ func (client *Client) UnmapVolume(name, host string) (*Response, *ResponseStatus
 	return client.Request(fmt.Sprintf("/unmap/volume/host/\"%s\"/\"%s\"", host, name))
 }
 
+// ExpandVolume : extend a volume if there is enough space on the vdisk
+func (client *Client) ExpandVolume(name, size string) (*Response, *ResponseStatus, error) {
+	return client.Request(fmt.Sprintf("/expand/volume/size/\"%s\"/\"%s\"", size, name))
+}
+
 // DeleteVolume : deletes a volume
 func (client *Client) DeleteVolume(name string) (*Response, *ResponseStatus, error) {
 	return client.Request(fmt.Sprintf("/delete/volumes/\"%s\"", name))
