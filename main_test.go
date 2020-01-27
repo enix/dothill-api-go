@@ -1,13 +1,11 @@
-package dothill_test
+package dothill
 
 import (
 	"fmt"
 	"testing"
-
-	"enix.io/dothill-api-go"
 )
 
-var client = &dothill.Client{
+var client = &Client{
 	Addr:     "http://mock:8080",
 	Username: "manage",
 	Password: "!manage",

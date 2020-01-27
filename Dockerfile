@@ -1,16 +1,10 @@
-FROM enix/go-dep:0.5
+FROM golang:1.12-alpine3.9
 
-WORKDIR /go/src/enix.io/dothill-api-go
+RUN apk add --update git curl g++
 
-RUN apk add --update curl g++
+COPY . /app
 
-COPY *.go ./
-
-COPY test ./test
-
-RUN dep init
-
-WORKDIR /go/src/enix.io/dothill-api-go/test
+WORKDIR /app
 
 ENTRYPOINT [ "/bin/sh" ]
 
