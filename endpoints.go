@@ -36,7 +36,15 @@ func (client *Client) MapVolume(name, host, access string, lun int) (*Response, 
 
 // UnmapVolume : unmap a volume from host
 func (client *Client) UnmapVolume(name, host string) (*Response, *ResponseStatus, error) {
-	return client.Request(fmt.Sprintf("/unmap/volume/host/\"%s\"/\"%s\"", host, name))
+	var url string
+
+	if host == "" {
+		url = fmt.Sprintf("/unmap/volume/\"%s\"", name)
+	} else {
+		url = fmt.Sprintf("/unmap/volume/host/\"%s\"/\"%s\"", host, name)
+	}
+
+	return client.Request(url)
 }
 
 // ExpandVolume : extend a volume if there is enough space on the vdisk
