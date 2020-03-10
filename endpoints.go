@@ -3,6 +3,7 @@ package dothill
 import (
 	"crypto/md5"
 	"fmt"
+	"strings"
 )
 
 // Login : Called automatically, may be called manually if credentials changed
@@ -32,6 +33,11 @@ func (client *Client) CreateHost(name, iqn string) (*Response, *ResponseStatus, 
 // MapVolume : map a volume to host + LUN
 func (client *Client) MapVolume(name, host, access string, lun int) (*Response, *ResponseStatus, error) {
 	return client.Request(fmt.Sprintf("/map/volume/access/%s/lun/%d/host/%s/\"%s\"", access, lun, host, name))
+}
+
+// ShowVolumes : get informations about volumes
+func (client *Client) ShowVolumes(volumes ...string) (*Response, *ResponseStatus, error) {
+	return client.Request(fmt.Sprintf("/show/volumes/\"%s\"", strings.Join(volumes, ",")))
 }
 
 // UnmapVolume : unmap a volume from host
