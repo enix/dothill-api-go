@@ -11,7 +11,7 @@ import (
 type Response struct {
 	Version    string   `xml:"VERSION,attr"`
 	Objects    []Object `xml:"OBJECT"`
-	ObjectsMap map[string]*Object
+	ObjectsMap map[string][]*Object
 }
 
 // Object : Typed representation of any XML API object
@@ -22,7 +22,7 @@ type Object struct {
 	Format        string     `xml:"format,attr,omitempty"`
 	Objects       []Object   `xml:"OBJECT"`
 	Properties    []Property `xml:"PROPERTY"`
-	ObjectsMap    map[string]*Object
+	ObjectsMap    map[string][]*Object
 	PropertiesMap map[string]*Property
 }
 
@@ -55,12 +55,7 @@ func NewResponse(data []byte) (*Response, error) {
 		return nil, err
 	}
 
-	res.ObjectsMap = make(map[string]*Object)
-	for idx := range res.Objects {
-		obj := &res.Objects[idx]
-		fillObjectMap(obj)
-		res.ObjectsMap[obj.Name] = obj
-	}
+	res.ObjectsMap = objectsToMap(res.Objects)
 
 	return res, nil
 }
@@ -68,7 +63,8 @@ func NewResponse(data []byte) (*Response, error) {
 // GetStatus : Creates and returns the final ResponseStatus struct
 // from the raw status object in response
 func (res *Response) GetStatus() *ResponseStatus {
-	statusObject := res.ObjectsMap["status"]
+	statusObject := res.ObjectsMap["status"][0]
+
 	responseTypeNumeric, _ := strconv.Atoi(statusObject.PropertiesMap["response-type-numeric"].Data)
 	returnCode, _ := strconv.Atoi(statusObject.PropertiesMap["return-code"].Data)
 	timestampNumeric, _ := strconv.Atoi(statusObject.PropertiesMap["time-stamp-numeric"].Data)
@@ -82,19 +78,29 @@ func (res *Response) GetStatus() *ResponseStatus {
 	}
 }
 
+func objectsToMap(objects []Object) map[string][]*Object {
+	objectsMap := make(map[string][]*Object)
+	
+	for idx := range objects {
+		subObject := &objects[idx]
+		fillObjectMap(subObject)
+		if objectsMap[subObject.Name] == nil {
+			objectsMap[subObject.Name] = make([]*Object, 0)
+		}
+		objectsMap[subObject.Name] = append(objectsMap[subObject.Name], subObject)
+	}
+
+	return objectsMap
+}
+
 func fillObjectMap(obj *Object) {
 	obj.PropertiesMap = make(map[string]*Property)
 
-	for idx2 := range obj.Properties {
-		prop := &obj.Properties[idx2]
+	for idx := range obj.Properties {
+		prop := &obj.Properties[idx]
 		prop.Data = strings.TrimSpace(prop.Data)
 		obj.PropertiesMap[prop.Name] = prop
 	}
 
-	obj.ObjectsMap = make(map[string]*Object)
-	for idx2 := range obj.Objects {
-		subObject := &obj.Objects[idx2]
-		fillObjectMap(subObject)
-		obj.ObjectsMap[subObject.Name] = subObject
-	}
+	obj.ObjectsMap = objectsToMap(obj.Objects)
 }

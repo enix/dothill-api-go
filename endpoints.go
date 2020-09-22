@@ -16,7 +16,7 @@ func (client *Client) Login() error {
 		return err
 	}
 
-	client.sessionKey = res.ObjectsMap["status"].PropertiesMap["response"].Data
+	client.sessionKey = res.ObjectsMap["status"][0].PropertiesMap["response"].Data
 	return nil
 }
 
