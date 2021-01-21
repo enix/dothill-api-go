@@ -35,18 +35,18 @@ func NewClient() *Client {
 }
 
 // Request : Execute the given request with client's configuration
-func (client *Client) Request(endpoint string) (*Response, *ResponseStatus, error) {
+func (client *Client) Request(endpoint string) (*Response, error) {
 	return client.request(&Request{Endpoint: endpoint})
 }
 
-func (client *Client) request(req *Request) (*Response, *ResponseStatus, error) {
+func (client *Client) request(req *Request) (*Response, error) {
 	isLoginReq := strings.Contains(req.Endpoint, "login")
 	if !isLoginReq {
 		if len(client.sessionKey) == 0 {
 			klog.V(1).Info("no session key stored, authenticating before sending request")
 			err := client.Login()
 			if err != nil {
-				return nil, nil, err
+				return nil, err
 			}
 		}
 
@@ -60,33 +60,33 @@ func (client *Client) request(req *Request) (*Response, *ResponseStatus, error) 
 		klog.V(1).Info("session key may have expired, trying to re-login")
 		err = client.Login()
 		if err != nil {
-			return nil, nil, err
+			return nil, err
 		}
 		klog.V(1).Info("re-login succeed, re-trying request")
 		raw, code, err = req.execute(client)
 	}
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 
 	res, err := NewResponse(raw)
 	if err != nil {
 		if res != nil {
-			return res, res.GetStatus(), err
+			return res, err
 		}
 
-		return nil, nil, err
+		return nil, err
 	}
 
-	status := res.GetStatus()
+	status := res.Status
 	if !isLoginReq {
 		klog.Infof("<- [%d %s] %s", status.ReturnCode, status.ResponseType, status.Response)
 	} else {
 		klog.Infof("<- [%d %s] <hidden>", status.ReturnCode, status.ResponseType)
 	}
 	if status.ResponseTypeNumeric != 0 {
-		return res, status, fmt.Errorf("Dothill API returned non-zero code %d (%s)", status.ReturnCode, status.Response)
+		return res, fmt.Errorf("Dothill API returned non-zero code %d (%s)", status.ReturnCode, status.Response)
 	}
 
-	return res, status, nil
+	return res, nil
 }

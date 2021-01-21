@@ -24,17 +24,17 @@ func TestLogin(t *testing.T) {
 }
 
 func TestInvalidURL(t *testing.T) {
-	_, _, err := client.Request("/trololol")
+	_, err := client.Request("/trololol")
 	assert(t, err != nil, "it should return an error")
 }
 
 func TestInvalidXML(t *testing.T) {
-	_, _, err := client.Request("/invalid/xml")
+	_, err := client.Request("/invalid/xml")
 	assert(t, err != nil, "it should return an error")
 }
 
 func TestStatusCodeNotZero(t *testing.T) {
-	_, status, err := client.Request("/status/code/1")
+	response, err := client.Request("/status/code/1")
 	assert(t, err != nil, "it should return an error")
-	assert(t, status.ResponseTypeNumeric == 1, "it should return the status code 1 to the user")
+	assert(t, response.Status.ResponseTypeNumeric == 1, "it should return the status code 1 to the user")
 }

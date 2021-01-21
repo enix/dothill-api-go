@@ -13,7 +13,7 @@ type Volume struct {
 }
 
 func (m *Volume) fillFromObject(obj *Object) error {
-	lun, err := strconv.Atoi(obj.PropertiesMap["lun"].Data)
+	lun, err := strconv.Atoi(obj.Properties["lun"].Data)
 	if err != nil {
 		return err
 	}
