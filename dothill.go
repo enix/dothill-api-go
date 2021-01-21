@@ -60,32 +60,32 @@ func NewClient() *Client {
 
 // Request : Execute the given request with client's configuration
 // Deprecated: Use FormattedRequest instead
-func (client *Client) Request(endpoint string) (*Response, *ResponseStatus, error) {
+func (client *Client) Request(endpoint string) (*Response, error) {
 	if client.Addr == "" {
 		err := errors.New("missing server address")
-		return nil, NewErrorStatus(err.Error()), err
+		return nil, err
 	}
 
 	return client.request(&Request{Endpoint: endpoint})
 }
 
 // FormattedRequest : Format and execute the given request with client's configuration
-func (client *Client) FormattedRequest(endpointFormat string, opts ...interface{}) (*Response, *ResponseStatus, error) {
+func (client *Client) FormattedRequest(endpointFormat string, opts ...interface{}) (*Response, error) {
 	endpoint := fmt.Sprintf(endpointFormat, opts...)
 	stopTrackAPICall := client.Collector.trackAPICall(endpointFormat)
-	resp, status, err := client.Request(endpoint)
+	resp, err := client.Request(endpoint)
 	stopTrackAPICall(err == nil)
-	return resp, status, err
+	return resp, err
 }
 
-func (client *Client) request(req *Request) (*Response, *ResponseStatus, error) {
+func (client *Client) request(req *Request) (*Response, error) {
 	isLoginReq := strings.Contains(req.Endpoint, "login")
 	if !isLoginReq {
 		if len(client.sessionKey) == 0 {
 			klog.V(1).Info("no session key stored, authenticating before sending request")
 			err := client.Login()
 			if err != nil {
-				return nil, NewErrorStatus("login failed"), err
+				return NewErrorResponse("login failed"), err
 			}
 		}
 
@@ -99,33 +99,33 @@ func (client *Client) request(req *Request) (*Response, *ResponseStatus, error) 
 		klog.V(1).Info("session key may have expired, trying to re-login")
 		err = client.Login()
 		if err != nil {
-			return nil, NewErrorStatus("re-login failed"), err
+			return NewErrorResponse("re-login failed"), err
 		}
 		klog.V(1).Info("re-login succeed, re-trying request")
 		raw, _, err = req.execute(client)
 	}
 	if err != nil {
-		return nil, NewErrorStatus("request failed"), err
+		return NewErrorResponse("request failed"), err
 	}
 
 	res, err := NewResponse(raw)
 	if err != nil {
 		if res != nil {
-			return res, res.GetStatus(), err
+			return res, err
 		}
 
-		return nil, NewErrorStatus("corrupted response"), err
+		return NewErrorResponse("corrupted response"), err
 	}
 
-	status := res.GetStatus()
+	status := res.Status
 	if !isLoginReq {
 		klog.Infof("<- [%d %s] %s", status.ReturnCode, status.ResponseType, status.Response)
 	} else {
 		klog.Infof("<- [%d %s] <hidden>", status.ReturnCode, status.ResponseType)
 	}
 	if status.ResponseTypeNumeric != 0 {
-		return res, status, fmt.Errorf("Dothill API returned non-zero code %d (%s)", status.ReturnCode, status.Response)
+		return res, fmt.Errorf("Dothill API returned non-zero code %d (%s)", status.ReturnCode, status.Response)
 	}
 
-	return res, status, nil
+	return res, nil
 }

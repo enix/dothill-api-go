@@ -91,17 +91,17 @@ func TestReLoginFailed(t *testing.T) {
 	wrongClient.Password = "wrongpassword"
 	wrongClient.sessionKey = "outdated-session-key"
 
-	_, status, err := wrongClient.Request("/bad/request")
+	resp, err := wrongClient.Request("/bad/request")
 	g.Expect(err).NotTo(BeNil())
 	g.Expect(err).To(MatchError("Dothill API returned non-zero code 2 (Authentication Unsuccessful)"))
-	g.Expect(status.ResponseType).To(Equal("Error"))
+	g.Expect(resp.Status.ResponseType).To(Equal("Error"))
 	// This test returns one of three different values based on the  API version.
-	g.Expect(status.Response).Should(BeElementOf([]string{"re-login failed", "request failed", "Invalid sessionkey"}))
+	g.Expect(resp.Status.Response).Should(BeElementOf([]string{"re-login failed", "request failed", "Invalid sessionkey"}))
 }
 
 func TestInvalidXML(t *testing.T) {
 	g := NewGomegaWithT(t)
-	res, err := NewResponse([]byte(`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+	resp, err := NewResponse([]byte(`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <RESPONSE VERSION="L100">
 	<OBJECT basetype="status" name="status" oid="1">
 		<PROPERTY name="response-type" type="string" size="12" draw="false" sort="nosort" display-name="Response Type">
@@ -113,17 +113,17 @@ func TestInvalidXML(t *testing.T) {
 		Msg:  "unexpected EOF",
 		Line: 6,
 	}))
-	g.Expect(res).To(BeNil())
+	g.Expect(resp).To(BeNil())
 }
 
 func TestBadRequest(t *testing.T) {
 	g := NewGomegaWithT(t)
-	response, status, err := client.Request("/bad/request")
+	resp, err := client.Request("/bad/request")
 
-	g.Expect(response).To(BeNil())
-	g.Expect(status.ResponseType).To(Equal("Error"))
-	g.Expect(status.Response).To(Equal("request failed"))
-	g.Expect(status.Time).To(BeTemporally("~", time.Now(), time.Second))
+	g.Expect(resp).To(Not(BeNil()))
+	g.Expect(resp.Status.ResponseType).To(Equal("Error"))
+	g.Expect(resp.Status.Response).To(Equal("request failed"))
+	g.Expect(resp.Status.Time).To(BeTemporally("~", time.Now(), time.Second))
 	g.Expect(err).NotTo(BeNil())
 	g.Expect(err).To(MatchError("API returned unexpected HTTP status 400"))
 }
