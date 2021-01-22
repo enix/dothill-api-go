@@ -98,15 +98,17 @@ func (client *Client) ShowHostMaps(host string) ([]Volume, error) {
 	}
 
 	mappings := make([]Volume, 0)
-	if hostViews, ok := res.Objects["host-view"]; ok {
-		for _, hostView := range hostViews {
-			if volumeViews, ok := hostView.Objects["volume-view"]; ok {
-				for _, volumeView := range volumeViews {
-					vol := Volume{}
-					vol.fillFromObject(&volumeView)
-					mappings = append(mappings, vol)
-				}
+	for _, object := range res.Objects {
+		if object.Type != "host-view" {
+			continue
+		}
+		for _, subObject := range object.Objects {
+			if subObject.Type != "volume-view" {
+				continue
 			}
+			vol := Volume{}
+			vol.fillFromObject(&subObject)
+			mappings = append(mappings, vol)
 		}
 	}
 

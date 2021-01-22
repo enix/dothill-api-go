@@ -32,7 +32,7 @@ import (
 type Response struct {
 	Version string
 	Status  ResponseStatus
-	Objects map[string][]Object
+	Objects []Object
 }
 
 // Object : Typed representation of any XML API object
@@ -41,7 +41,7 @@ type Object struct {
 	Type       string
 	Name       string
 	Format     string
-	Objects    map[string][]Object
+	Objects    []Object
 	Properties map[string]Property
 }
 
@@ -88,7 +88,7 @@ func NewResponse(data []byte) (*Response, error) {
 		return nil, err
 	}
 
-	objects := objectsToMap(res.Objects)
+	objects := objectsPropertiesToMap(res.Objects)
 	response := Response{
 		Version: res.Version,
 		Objects: objects,
@@ -113,12 +113,19 @@ func NewErrorStatus(err string) *ResponseStatus {
 }
 
 func (res *Response) computeStatus() {
-	statusObjects, statusObjectsExists := res.Objects["status"]
-	if !statusObjectsExists || len(statusObjects) == 0 {
+	var statusObject *Object
+	objects := []Object{}
+	for _, object := range res.Objects {
+		if object.Type == "status" {
+			statusObject = &object
+		} else {
+			objects = append(objects, object)
+		}
+	}
+	if statusObject == nil {
 		return
 	}
 
-	statusObject := statusObjects[0]
 	responseTypeNumeric, _ := strconv.Atoi(statusObject.Properties["response-type-numeric"].Data)
 	returnCode, _ := strconv.Atoi(statusObject.Properties["return-code"].Data)
 	timestampNumeric, _ := strconv.Atoi(statusObject.Properties["time-stamp-numeric"].Data)
@@ -131,36 +138,35 @@ func (res *Response) computeStatus() {
 		Time:                time.Unix(int64(timestampNumeric), 0),
 	}
 
-	delete(res.Objects, "status")
+	res.Objects = objects
 }
 
-func objectsToMap(objects []rawObject) map[string][]Object {
-	objectsMap := make(map[string][]Object)
+func objectsPropertiesToMap(rawObjects []rawObject) []Object {
+	objects := []Object{}
 
-	for idx := range objects {
-		subObject := &Object{}
-		rawSubObject := &objects[idx]
-		fillObjectMap(rawSubObject, subObject)
-		if objectsMap[rawSubObject.Name] == nil {
-			objectsMap[rawSubObject.Name] = make([]Object, 0)
-		}
-		objectsMap[rawSubObject.Name] = append(objectsMap[rawSubObject.Name], *subObject)
+	for idx := range rawObjects {
+		rawSubObject := &rawObjects[idx]
+		objects = append(objects, *objectFromRawObject(rawSubObject))
 	}
 
-	return objectsMap
+	return objects
 }
 
-func fillObjectMap(src *rawObject, dest *Object) {
-	dest.ID = src.OID
-	dest.Type = src.BaseType
-	dest.Name = src.Name
-	dest.Format = src.Format
-	dest.Objects = objectsToMap(src.Objects)
-	dest.Properties = make(map[string]Property)
+func objectFromRawObject(src *rawObject) *Object {
+	object := &Object{
+		ID:         src.OID,
+		Type:       src.BaseType,
+		Name:       src.Name,
+		Format:     src.Format,
+		Properties: make(map[string]Property),
+		Objects:    objectsPropertiesToMap(src.Objects),
+	}
 
 	for idx := range src.Properties {
 		prop := src.Properties[idx]
 		prop.Data = strings.TrimSpace(prop.Data)
-		dest.Properties[prop.Name] = prop
+		object.Properties[prop.Name] = prop
 	}
+
+	return object
 }
