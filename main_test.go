@@ -2,15 +2,22 @@ package dothill
 
 import (
 	"fmt"
+	"os"
 	"testing"
 
 	. "github.com/onsi/gomega"
 )
 
 var client = Client{
-	Addr:     "http://mock:8080",
+	Addr:     "http://localhost:8080",
 	Username: "manage",
 	Password: "!manage",
+}
+
+func init() {
+	if endpoint := os.Getenv("API_ENDPOINT"); endpoint != "" {
+		client.Addr = endpoint
+	}
 }
 
 func assert(t *testing.T, cond bool, msg string) {

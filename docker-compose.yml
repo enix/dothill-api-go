@@ -6,5 +6,7 @@ services:
 
   tests:
     build: .
+    environment:
+      API_ENDPOINT: http://mock:8080
     depends_on:
       - mock
