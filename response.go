@@ -65,6 +65,15 @@ func NewResponse(data []byte) (*Response, error) {
 	return res, nil
 }
 
+// NewErrorStatus : Creates an error status when response is not available
+func NewErrorStatus(err string) *ResponseStatus {
+	return &ResponseStatus{
+		ResponseType: "Error",
+		Response:     err,
+		Time:         time.Now(),
+	}
+}
+
 // GetStatus : Creates and returns the final ResponseStatus struct
 // from the raw status object in response
 func (res *Response) GetStatus() *ResponseStatus {
