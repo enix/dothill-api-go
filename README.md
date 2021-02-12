@@ -1,12 +1,10 @@
 # dothill-api-go
 
 [![Build status](https://gitlab.com/enix.io/dothill-api-go/badges/master/pipeline.svg)](https://gitlab.com/enix.io/dothill-api-go/-/pipelines)
+[![Go Report Card](https://goreportcard.com/badge/github.com/enix/dothill-api-go)](https://goreportcard.com/report/github.com/enix/dothill-api-go)
+[![PkgGoDev](https://pkg.go.dev/badge/github.com/enix/dothill-api-go)](https://pkg.go.dev/github.com/enix/dothill-api-go)
 
 A Go implementation of the [Dothill API](https://www.seagate.com/files/dothill-content/support/documentation/AssuredSAN_4004_Series_CLI_Reference_Guide_GL105.pdf).
-
-## Using the library
-
-A minimalist documentation is available on [godoc](https://godoc.org/github.com/enix/dothill-api-go).
 
 ## Run tests
 
