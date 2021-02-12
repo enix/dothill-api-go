@@ -1,6 +1,5 @@
+repositoryUrl: git@github.com:enix/dothill-api-go.git
 plugins:
   - '@semantic-release/commit-analyzer'
   - '@semantic-release/release-notes-generator'
   - '@semantic-release/github'
-  - - '@semantic-release/gitlab'
-    - gitlabUrl: https://gitlab.enix.io
