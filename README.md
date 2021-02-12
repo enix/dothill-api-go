@@ -1,5 +1,7 @@
 # dothill-api-go
 
+[![Build status](https://gitlab.com/enix.io/dothill-api-go/badges/master/pipeline.svg)](https://gitlab.com/enix.io/dothill-api-go/-/pipelines)
+
 A Go implementation of the [Dothill API](https://www.seagate.com/files/dothill-content/support/documentation/AssuredSAN_4004_Series_CLI_Reference_Guide_GL105.pdf).
 
 ## Using the library
@@ -18,4 +20,8 @@ npm run start
 
 You're now ready to go, just run `go test` to run the tests suite.
 
-You can also skip previous steps and just run tests with docker-compose (`docker-compose up --build --abort-on-container-exit --exit-code-from tests`).
+You can also skip previous steps and just run tests with docker-compose:
+
+```sh
+docker-compose up --build --abort-on-container-exit --exit-code-from tests
+```
