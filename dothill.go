@@ -46,7 +46,7 @@ func (client *Client) request(req *Request) (*Response, *ResponseStatus, error) 
 			klog.V(1).Info("no session key stored, authenticating before sending request")
 			err := client.Login()
 			if err != nil {
-				return nil, nil, err
+				return nil, NewErrorStatus("login failed"), err
 			}
 		}
 
@@ -60,13 +60,13 @@ func (client *Client) request(req *Request) (*Response, *ResponseStatus, error) 
 		klog.V(1).Info("session key may have expired, trying to re-login")
 		err = client.Login()
 		if err != nil {
-			return nil, nil, err
+			return nil, NewErrorStatus("re-login failed"), err
 		}
 		klog.V(1).Info("re-login succeed, re-trying request")
 		raw, code, err = req.execute(client)
 	}
 	if err != nil {
-		return nil, nil, err
+		return nil, NewErrorStatus("request failed"), err
 	}
 
 	res, err := NewResponse(raw)
@@ -75,7 +75,7 @@ func (client *Client) request(req *Request) (*Response, *ResponseStatus, error) 
 			return res, res.GetStatus(), err
 		}
 
-		return nil, nil, err
+		return nil, NewErrorStatus("corrupted response"), err
 	}
 
 	status := res.GetStatus()

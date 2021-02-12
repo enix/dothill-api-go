@@ -5,7 +5,7 @@ stages:
 test:
   stage: test
   image:
-    name: docker/compose:1.24.0
+    name: docker/compose:1.28.2
     entrypoint: ["/bin/sh", "-c"]
   services:
     - docker:dind

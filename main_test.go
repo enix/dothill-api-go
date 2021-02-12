@@ -2,13 +2,22 @@ package dothill
 
 import (
 	"fmt"
+	"os"
 	"testing"
+
+	. "github.com/onsi/gomega"
 )
 
-var client = &Client{
-	Addr:     "http://mock:8080",
+var client = Client{
+	Addr:     "http://localhost:8080",
 	Username: "manage",
 	Password: "!manage",
+}
+
+func init() {
+	if endpoint := os.Getenv("API_ENDPOINT"); endpoint != "" {
+		client.Addr = endpoint
+	}
 }
 
 func assert(t *testing.T, cond bool, msg string) {
@@ -20,21 +29,62 @@ func assert(t *testing.T, cond bool, msg string) {
 }
 
 func TestLogin(t *testing.T) {
-	assert(t, client.Login() == nil, "login should succeed")
+	g := NewGomegaWithT(t)
+	g.Expect(client.Login()).To(BeNil())
+}
+
+func TestLoginFailed(t *testing.T) {
+	var wrongClient = Client{
+		Addr:     client.Addr,
+		Username: client.Username,
+		Password: "wrongpassword",
+	}
+
+	g := NewGomegaWithT(t)
+	g.Expect(wrongClient.Login()).ToNot(BeNil())
+}
+
+func TestReLoginFailed(t *testing.T) {
+	var wrongClient = Client{
+		Addr:     client.Addr,
+		Username: client.Username,
+		Password: client.Password,
+	}
+
+	g := NewGomegaWithT(t)
+	g.Expect(wrongClient.Login()).To(BeNil())
+
+	wrongClient.Password = "wrongpassword"
+	wrongClient.sessionKey = "outdated-session-key"
+
+	_, status, err := wrongClient.Request("/status/code/1")
+	g.Expect(err).NotTo(BeNil())
+	g.Expect(status.ResponseType).To(Equal("Error"))
+	g.Expect(status.Response).To(Equal("re-login failed"))
 }
 
 func TestInvalidURL(t *testing.T) {
-	_, _, err := client.Request("/trololol")
-	assert(t, err != nil, "it should return an error")
+	g := NewGomegaWithT(t)
+	_, status, err := client.Request("/trololol")
+
+	g.Expect(err).NotTo(BeNil())
+	g.Expect(status.ResponseType).To(Equal("Error"))
+	g.Expect(status.Response).To(Equal("request failed"))
 }
 
 func TestInvalidXML(t *testing.T) {
-	_, _, err := client.Request("/invalid/xml")
-	assert(t, err != nil, "it should return an error")
+	g := NewGomegaWithT(t)
+	_, status, err := client.Request("/invalid/xml")
+
+	g.Expect(err).NotTo(BeNil())
+	g.Expect(status.ResponseType).To(Equal("Error"))
+	g.Expect(status.Response).To(Equal("corrupted response"))
 }
 
 func TestStatusCodeNotZero(t *testing.T) {
+	g := NewGomegaWithT(t)
 	_, status, err := client.Request("/status/code/1")
-	assert(t, err != nil, "it should return an error")
-	assert(t, status.ResponseTypeNumeric == 1, "it should return the status code 1 to the user")
+
+	g.Expect(err).NotTo(BeNil())
+	g.Expect(status.ResponseTypeNumeric).To(Equal(1))
 }
