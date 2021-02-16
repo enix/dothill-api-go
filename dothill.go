@@ -63,7 +63,7 @@ func (client *Client) request(req *Request) (*Response, *ResponseStatus, error) 
 			return nil, NewErrorStatus("re-login failed"), err
 		}
 		klog.V(1).Info("re-login succeed, re-trying request")
-		raw, code, err = req.execute(client)
+		raw, _, err = req.execute(client)
 	}
 	if err != nil {
 		return nil, NewErrorStatus("request failed"), err
