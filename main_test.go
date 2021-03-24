@@ -8,13 +8,13 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var client = Client{
-	Addr:     "http://localhost:8080",
-	Username: "manage",
-	Password: "!manage",
-}
+var client = NewClient()
 
 func init() {
+	client.Addr = "http://localhost:8080"
+	client.Username = "manage"
+	client.Password = "!manage"
+
 	if endpoint := os.Getenv("API_ENDPOINT"); endpoint != "" {
 		client.Addr = endpoint
 	}
@@ -34,22 +34,20 @@ func TestLogin(t *testing.T) {
 }
 
 func TestLoginFailed(t *testing.T) {
-	var wrongClient = Client{
-		Addr:     client.Addr,
-		Username: client.Username,
-		Password: "wrongpassword",
-	}
+	var wrongClient = NewClient()
+	wrongClient.Addr = client.Addr
+	wrongClient.Username = client.Username
+	wrongClient.Password = "wrongpassword"
 
 	g := NewGomegaWithT(t)
 	g.Expect(wrongClient.Login()).ToNot(BeNil())
 }
 
 func TestReLoginFailed(t *testing.T) {
-	var wrongClient = Client{
-		Addr:     client.Addr,
-		Username: client.Username,
-		Password: client.Password,
-	}
+	var wrongClient = NewClient()
+	wrongClient.Addr = client.Addr
+	wrongClient.Username = client.Username
+	wrongClient.Password = client.Password
 
 	g := NewGomegaWithT(t)
 	g.Expect(wrongClient.Login()).To(BeNil())

@@ -16,6 +16,7 @@ type Client struct {
 	Password   string
 	Addr       string
 	HTTPClient http.Client
+	Collector  *Collector
 	sessionKey string
 }
 
@@ -31,12 +32,23 @@ func NewClient() *Client {
 				},
 			},
 		},
+		Collector: newCollector(),
 	}
 }
 
 // Request : Execute the given request with client's configuration
+// Deprecated: Use FormattedRequest instead
 func (client *Client) Request(endpoint string) (*Response, *ResponseStatus, error) {
 	return client.request(&Request{Endpoint: endpoint})
+}
+
+// FormattedRequest : Format and execute the given request with client's configuration
+func (client *Client) FormattedRequest(endpointFormat string, opts ...interface{}) (*Response, *ResponseStatus, error) {
+	endpoint := fmt.Sprintf(endpointFormat, opts...)
+	stopTrackAPICall := client.Collector.trackAPICall(endpointFormat)
+	resp, status, err := client.Request(endpoint)
+	stopTrackAPICall(err == nil)
+	return resp, status, err
 }
 
 func (client *Client) request(req *Request) (*Response, *ResponseStatus, error) {
