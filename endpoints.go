@@ -92,3 +92,21 @@ func (client *Client) ShowHostMaps(host string) ([]Volume, *ResponseStatus, erro
 
 	return mappings, status, err
 }
+
+// ShowSnapshots : List snapshots
+func (client *Client) ShowSnapshots(names ...string) (*Response, *ResponseStatus, error) {
+	if len(names) == 0 {
+		return client.FormattedRequest("/show/snapshots")
+	}
+	return client.FormattedRequest("/show/snapshots/%q", strings.Join(names, ","))
+}
+
+// CreateSnapshot : Create a snapshot in a snap pool and the snap pool if it doesn't exsits
+func (client *Client) CreateSnapshot(name string, snapshotName string) (*Response, *ResponseStatus, error) {
+	return client.FormattedRequest("/create/snapshots/volumes/%q/%q/", name, snapshotName)
+}
+
+// DeleteSnapshot : Delete a snapshot from a snap pool
+func (client *Client) DeleteSnapshot(names ...string) (*Response, *ResponseStatus, error) {
+	return client.FormattedRequest("/delete/snapshot/%q", strings.Join(names, ","))
+}
