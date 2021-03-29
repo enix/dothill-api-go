@@ -2,6 +2,7 @@ package dothill
 
 import (
 	"encoding/xml"
+	"fmt"
 	"strconv"
 	"strings"
 	"time"
@@ -89,6 +90,20 @@ func (res *Response) GetStatus() *ResponseStatus {
 		ReturnCode:          returnCode,
 		Time:                time.Unix(int64(timestampNumeric), 0),
 	}
+}
+
+func (object *Object) GetProperties(names ...string) ([]*Property, error) {
+	var properties []*Property
+
+	for _, name := range names {
+		if property, ok := object.PropertiesMap[name]; ok {
+			properties = append(properties, property)
+		} else {
+			return nil, fmt.Errorf("missing property %q", name)
+		}
+	}
+
+	return properties, nil
 }
 
 func fillObjectMap(obj *Object) {
