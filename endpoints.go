@@ -59,7 +59,7 @@ func (client *Client) DeleteVolume(name string) (*Response, *ResponseStatus, err
 	return client.FormattedRequest("/delete/volumes/\"%s\"", name)
 }
 
-// DeleteHost : deletes a hotst by its ID or nickname
+// DeleteHost : deletes a host by its ID or nickname
 func (client *Client) DeleteHost(name string) (*Response, *ResponseStatus, error) {
 	return client.FormattedRequest("/delete/host/\"%s\"", name)
 }
@@ -91,4 +91,27 @@ func (client *Client) ShowHostMaps(host string) ([]Volume, *ResponseStatus, erro
 	}
 
 	return mappings, status, err
+}
+
+// ShowSnapshots : list snapshots
+func (client *Client) ShowSnapshots(names ...string) (*Response, *ResponseStatus, error) {
+	if len(names) == 0 {
+		return client.FormattedRequest("/show/snapshots")
+	}
+	return client.FormattedRequest("/show/snapshots/%q", strings.Join(names, ","))
+}
+
+// CreateSnapshot : create a snapshot in a snap pool and the snap pool if it doesn't exsits
+func (client *Client) CreateSnapshot(name string, snapshotName string) (*Response, *ResponseStatus, error) {
+	return client.FormattedRequest("/create/snapshots/volumes/%q/%q", name, snapshotName)
+}
+
+// DeleteSnapshot : delete a snapshot
+func (client *Client) DeleteSnapshot(names ...string) (*Response, *ResponseStatus, error) {
+	return client.FormattedRequest("/delete/snapshot/%q", strings.Join(names, ","))
+}
+
+// CopyVolume : create an new volume by copying another one or a snapshot
+func (client *Client) CopyVolume(sourceName string, destinationName string, pool string) (*Response, *ResponseStatus, error) {
+	return client.FormattedRequest("/copy/volume/destination-pool/%q/name/%q/%q", pool, destinationName, sourceName)
 }
