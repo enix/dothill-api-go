@@ -2,6 +2,7 @@ package dothill
 
 import (
 	"crypto/tls"
+	"errors"
 	"fmt"
 	"net/http"
 	"strings"
@@ -39,6 +40,11 @@ func NewClient() *Client {
 // Request : Execute the given request with client's configuration
 // Deprecated: Use FormattedRequest instead
 func (client *Client) Request(endpoint string) (*Response, *ResponseStatus, error) {
+	if client.Addr == "" {
+		err := errors.New("missing server address")
+		return nil, NewErrorStatus(err.Error()), err
+	}
+
 	return client.request(&Request{Endpoint: endpoint})
 }
 
