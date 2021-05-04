@@ -2,21 +2,38 @@ package dothill
 
 import (
 	"crypto/md5"
+	"crypto/sha256"
 	"fmt"
 	"strings"
 )
 
 // Login : Called automatically, may be called manually if credentials changed
-func (client *Client) Login() error {
+func (client *Client) Login(hashf ...string) error {
 	userpass := fmt.Sprintf("%s_%s", client.Username, client.Password)
-	hash := md5.Sum([]byte(userpass))
-	res, _, err := client.FormattedRequest("/login/%x", hash)
+
+	var hashmethod string = "md5"
+	if len(hashf) > 0 {
+		hashmethod = hashf[0]
+	}
+
+	var hash string
+	if hashmethod == "md5" {
+		hash = fmt.Sprintf("%x", md5.Sum([]byte(userpass)))
+	} else if hashmethod == "sha256" {
+		hasher := sha256.New()
+		hasher.Write([]byte(userpass))
+		hash = fmt.Sprintf("%x", hasher.Sum(nil))
+	} else {
+		return fmt.Errorf("Login: hash function (%s) not supported, try: md5, sha256", hashmethod)
+	}
+
+	res, _, err := client.FormattedRequest("/login/%s", hash)
 
 	if err != nil {
 		return err
 	}
 
-	client.sessionKey = res.ObjectsMap["status"].PropertiesMap["response"].Data
+	client.SessionKey = res.ObjectsMap["status"].PropertiesMap["response"].Data
 	return nil
 }
 
