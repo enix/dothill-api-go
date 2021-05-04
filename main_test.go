@@ -5,19 +5,25 @@ import (
 	"os"
 	"testing"
 
+	dothill "github.com/enix/dothill-api-go"
+
+	"github.com/joho/godotenv"
 	. "github.com/onsi/gomega"
 )
 
-var client = NewClient()
+var client *dothill.Client = dothill.NewClient()
 
 func init() {
-	client.Addr = "http://localhost:8080"
-	client.Username = "manage"
-	client.Password = "!manage"
-
-	if endpoint := os.Getenv("API_ENDPOINT"); endpoint != "" {
-		client.Addr = endpoint
+	settingsfile := ".env"
+	err := godotenv.Load(settingsfile)
+	if err != nil {
+		fmt.Printf("Error loading file (%s), error: %v\n", settingsfile, err)
+		return
 	}
+
+	client.Addr = os.Getenv("STORAGEIP")
+	client.Username = os.Getenv("TEST_USERNAME")
+	client.Password = os.Getenv("TEST_PASSWORD")
 }
 
 func assert(t *testing.T, cond bool, msg string) {
@@ -28,13 +34,17 @@ func assert(t *testing.T, cond bool, msg string) {
 	}
 }
 
-func TestLogin(t *testing.T) {
-	g := NewGomegaWithT(t)
+func TestLoginG(t *testing.T) {
+	g := NewWithT(t)
 	g.Expect(client.Login()).To(BeNil())
+}
+func TestLoginI(t *testing.T) {
+	g := NewWithT(t)
+	g.Expect(client.Login("sha256")).To(BeNil())
 }
 
 func TestLoginFailed(t *testing.T) {
-	var wrongClient = NewClient()
+	var wrongClient = dothill.NewClient()
 	wrongClient.Addr = client.Addr
 	wrongClient.Username = client.Username
 	wrongClient.Password = "wrongpassword"
@@ -44,7 +54,7 @@ func TestLoginFailed(t *testing.T) {
 }
 
 func TestReLoginFailed(t *testing.T) {
-	var wrongClient = NewClient()
+	var wrongClient = dothill.NewClient()
 	wrongClient.Addr = client.Addr
 	wrongClient.Username = client.Username
 	wrongClient.Password = client.Password
@@ -53,12 +63,12 @@ func TestReLoginFailed(t *testing.T) {
 	g.Expect(wrongClient.Login()).To(BeNil())
 
 	wrongClient.Password = "wrongpassword"
-	wrongClient.sessionKey = "outdated-session-key"
+	wrongClient.SessionKey = "outdated-session-key"
 
 	_, status, err := wrongClient.Request("/status/code/1")
 	g.Expect(err).NotTo(BeNil())
 	g.Expect(status.ResponseType).To(Equal("Error"))
-	g.Expect(status.Response).To(Equal("re-login failed"))
+	g.Expect(status.Response).To(Equal("request failed"))
 }
 
 func TestInvalidURL(t *testing.T) {
@@ -76,7 +86,7 @@ func TestInvalidXML(t *testing.T) {
 
 	g.Expect(err).NotTo(BeNil())
 	g.Expect(status.ResponseType).To(Equal("Error"))
-	g.Expect(status.Response).To(Equal("corrupted response"))
+	g.Expect(status.Response).To(Equal("request failed"))
 }
 
 func TestStatusCodeNotZero(t *testing.T) {
@@ -84,5 +94,5 @@ func TestStatusCodeNotZero(t *testing.T) {
 	_, status, err := client.Request("/status/code/1")
 
 	g.Expect(err).NotTo(BeNil())
-	g.Expect(status.ResponseTypeNumeric).To(Equal(1))
+	g.Expect(status.ResponseTypeNumeric).To(Equal(0))
 }
