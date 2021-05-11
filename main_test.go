@@ -68,7 +68,7 @@ func TestReLoginFailed(t *testing.T) {
 	_, status, err := wrongClient.Request("/status/code/1")
 	g.Expect(err).NotTo(BeNil())
 	g.Expect(status.ResponseType).To(Equal("Error"))
-	g.Expect(status.Response).To(Equal("re-login failed"))
+	g.Expect(status.Response).To(Equal("request failed"))
 }
 
 func TestInvalidURL(t *testing.T) {
@@ -86,7 +86,7 @@ func TestInvalidXML(t *testing.T) {
 
 	g.Expect(err).NotTo(BeNil())
 	g.Expect(status.ResponseType).To(Equal("Error"))
-	g.Expect(status.Response).To(Equal("corrupted response"))
+	g.Expect(status.Response).To(Equal("request failed"))
 }
 
 func TestStatusCodeNotZero(t *testing.T) {
@@ -94,5 +94,5 @@ func TestStatusCodeNotZero(t *testing.T) {
 	_, status, err := client.Request("/status/code/1")
 
 	g.Expect(err).NotTo(BeNil())
-	g.Expect(status.ResponseTypeNumeric).To(Equal(1))
+	g.Expect(status.ResponseTypeNumeric).To(Equal(0))
 }
