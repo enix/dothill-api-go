@@ -18,7 +18,7 @@ type Client struct {
 	Addr       string
 	HTTPClient http.Client
 	Collector  *Collector
-	SessionKey string
+	sessionKey string
 }
 
 // NewClient : Creates a dothill client by setting up its HTTP client
@@ -60,7 +60,7 @@ func (client *Client) FormattedRequest(endpointFormat string, opts ...interface{
 func (client *Client) request(req *Request) (*Response, *ResponseStatus, error) {
 	isLoginReq := strings.Contains(req.Endpoint, "login")
 	if !isLoginReq {
-		if len(client.SessionKey) == 0 {
+		if len(client.sessionKey) == 0 {
 			klog.V(1).Info("no session key stored, authenticating before sending request")
 			err := client.Login()
 			if err != nil {
