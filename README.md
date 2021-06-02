@@ -8,13 +8,7 @@ A Go implementation of the [Dothill API](https://www.seagate.com/files/dothill-c
 
 ## Run tests
 
-In order to run tests, you will need to install node.js and npm to run the mock server. When it's done, go to the `mock` directory, install dependencies and start the mock server.
-
-```sh
-cd ./mock
-npm install
-npm run start
-```
+In order to run tests, you will need to start a mock server by running `go run cmd/mock/mock.go`. It will expose the mocked api on `localhost:8080`.
 
 You're now ready to go, just run `go test` to run the tests suite.
 
