@@ -80,7 +80,7 @@ func TestReLoginFailed(t *testing.T) {
 	g.Expect(err).NotTo(BeNil())
 	g.Expect(status.ResponseType).To(Equal("Error"))
 	// This test returns one of two different values based on the  API version, either: 'request failed' or 'Invalid sessionkey'
-	g.Expect(status.Response).Should(BeElementOf([]string{"request failed", "Invalid sessionkey"}))
+	g.Expect(status.Response).Should(BeElementOf([]string{"re-login failed", "request failed", "Invalid sessionkey"}))
 }
 
 func TestInvalidURL(t *testing.T) {
