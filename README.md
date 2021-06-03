@@ -12,7 +12,7 @@ In order to run tests, you will need to start a mock server by running `go run c
 
 You're now ready to go, just run `go test` to run the tests suite.
 
-You can also skip previous steps and just run tests with docker-compose:
+You can also run tests with docker-compose:
 
 ```sh
 docker-compose up --build --abort-on-container-exit --exit-code-from tests
