@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/joho/godotenv"
+	"github.com/enix/dothill-api-go/internal/mock"
 	. "github.com/onsi/gomega"
 )
 
@@ -15,17 +15,8 @@ var client = NewClient()
 
 func init() {
 	var exists bool
-	settingsfile := ".env"
 
-	// Note, any defined environment variable is used over the ones defined in .env
-	if _, err := os.Stat(settingsfile); err == nil {
-		fmt.Printf("Testing setup: Loading (%s)\n", settingsfile)
-		err := godotenv.Load(settingsfile)
-		if err != nil {
-			fmt.Printf("Error loading file (%s), error: %v\n", settingsfile, err)
-			return
-		}
-	}
+	mock.LoadEnv()
 
 	client.Addr, exists = os.LookupEnv("TEST_STORAGEIP")
 	if exists {

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"math/rand"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -24,20 +25,33 @@ func randomHexa(n int) string {
 }
 
 type AuthController struct {
-	Tokens map[string]struct{}
+	Tokens   map[string]struct{}
+	username string
+	password string
 }
 
 func NewAuthController() *AuthController {
+	username := os.Getenv("TEST_USERNAME")
+	password := os.Getenv("TEST_PASSWORD")
+
+	if username == "" {
+		panic("missing TEST_USERNAME environment variable")
+	}
+	if password == "" {
+		panic("missing TEST_PASSWORD environment variable")
+	}
+
+	fmt.Printf("Starting Auth Controller with username=%q and password=%q\n", username, password)
+
 	return &AuthController{
-		Tokens: map[string]struct{}{},
+		Tokens:   map[string]struct{}{},
+		username: username,
+		password: password,
 	}
 }
 
 func (a AuthController) Login(c *gin.Context) {
-	username := "manage"
-	password := "!manage"
-
-	userpass := fmt.Sprintf("%s_%s", username, password)
+	userpass := fmt.Sprintf("%s_%s", a.username, a.password)
 	hash := md5.Sum([]byte(userpass))
 
 	if c.Param("hash") == fmt.Sprintf("%x", hash) {
