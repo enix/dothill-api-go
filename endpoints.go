@@ -9,8 +9,8 @@ import (
 // Login : Called automatically, may be called manually if credentials changed
 func (client *Client) Login() error {
 	userpass := fmt.Sprintf("%s_%s", client.Username, client.Password)
-	hash := md5.Sum([]byte(userpass))
-	res, _, err := client.FormattedRequest("/login/%x", hash)
+	hash := fmt.Sprintf("%x", md5.Sum([]byte(userpass)))
+	res, _, err := client.FormattedRequest("/login/%s", hash)
 
 	if err != nil {
 		return err

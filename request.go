@@ -20,6 +20,7 @@ func (req *Request) execute(client *Client) ([]byte, int, error) {
 	}
 
 	httpReq.Header.Set("sessionKey", client.sessionKey)
+	httpReq.SetBasicAuth(client.Username, client.Password)
 	res, err := client.HTTPClient.Do(httpReq)
 	if err != nil {
 		return nil, 0, err
