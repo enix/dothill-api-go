@@ -14,29 +14,11 @@
 #
 # Authors:
 # Paul Laffitte <paul.laffitte@enix.fr>
-# Arthur Chaloin <arthur.chaloin@enix.fr>
 # Alexandre Buisine <alexandre.buisine@enix.fr>
 
-stages:
-  - test
-  - release
-
-test:
-  stage: test
-  image:
-    name: docker/compose:1.28.2
-    entrypoint: ["/bin/sh", "-c"]
-  services:
-    - docker:dind
-  script:
-    - docker-compose up --build --abort-on-container-exit --exit-code-from tests
-
-semantic-release:
-  stage: release
-  image: enix/semantic-release:gitlab
-  script:
-    - npx semantic-release --ci
-  only:
-    - master
-  except:
-    - tags
+mock
+.gitignore
+*.yml
+Dockerfile
+LICENSE
+README.md

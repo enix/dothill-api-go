@@ -15,30 +15,13 @@
  *
  * Authors:
  * Paul Laffitte <paul.laffitte@enix.fr>
- * Arthur Chaloin <arthur.chaloin@enix.fr>
  * Alexandre Buisine <alexandre.buisine@enix.fr>
  */
 
-package dothill
+package main
 
-import "strconv"
+import "github.com/enix/dothill-api-go/internal/mock"
 
-// model : interface to allow generic conversion from raw response to user-object
-type model interface {
-	fillFromObject(obj *Object) error
-}
-
-// Volume : volume-view representation
-type Volume struct {
-	LUN int
-}
-
-func (m *Volume) fillFromObject(obj *Object) error {
-	lun, err := strconv.Atoi(obj.PropertiesMap["lun"].Data)
-	if err != nil {
-		return err
-	}
-
-	m.LUN = lun
-	return nil
+func main() {
+	mock.StartServer()
 }

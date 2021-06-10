@@ -15,30 +15,35 @@
  *
  * Authors:
  * Paul Laffitte <paul.laffitte@enix.fr>
- * Arthur Chaloin <arthur.chaloin@enix.fr>
  * Alexandre Buisine <alexandre.buisine@enix.fr>
  */
 
-package dothill
+package mock
 
-import "strconv"
+import (
+	"fmt"
+	"os"
 
-// model : interface to allow generic conversion from raw response to user-object
-type model interface {
-	fillFromObject(obj *Object) error
+	"github.com/joho/godotenv"
+)
+
+const SettingsFile = ".env"
+
+func StartServer() {
+	LoadEnv()
+
+	r := NewRouter()
+	r.Run()
 }
 
-// Volume : volume-view representation
-type Volume struct {
-	LUN int
-}
-
-func (m *Volume) fillFromObject(obj *Object) error {
-	lun, err := strconv.Atoi(obj.PropertiesMap["lun"].Data)
-	if err != nil {
-		return err
+func LoadEnv() {
+	// Note, any defined environment variable is used over the ones defined in .env
+	if _, err := os.Stat(SettingsFile); err == nil {
+		fmt.Printf("Testing setup: Loading (%s)\n", SettingsFile)
+		err := godotenv.Load(SettingsFile)
+		if err != nil {
+			fmt.Printf("Error loading file (%s), error: %v\n", SettingsFile, err)
+			return
+		}
 	}
-
-	m.LUN = lun
-	return nil
 }

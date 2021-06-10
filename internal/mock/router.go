@@ -15,30 +15,38 @@
  *
  * Authors:
  * Paul Laffitte <paul.laffitte@enix.fr>
- * Arthur Chaloin <arthur.chaloin@enix.fr>
  * Alexandre Buisine <alexandre.buisine@enix.fr>
  */
 
-package dothill
+package mock
 
-import "strconv"
+import (
+	"net/http"
 
-// model : interface to allow generic conversion from raw response to user-object
-type model interface {
-	fillFromObject(obj *Object) error
-}
+	"github.com/enix/dothill-api-go/internal/mock/controllers"
+	"github.com/gin-gonic/gin"
+)
 
-// Volume : volume-view representation
-type Volume struct {
-	LUN int
-}
+func NewRouter() *gin.Engine {
+	router := gin.Default()
+	auth := controllers.NewAuthController()
 
-func (m *Volume) fillFromObject(obj *Object) error {
-	lun, err := strconv.Atoi(obj.PropertiesMap["lun"].Data)
-	if err != nil {
-		return err
+	api := router.Group("api")
+	{
+		api.GET("/login/:hash", auth.Login)
 	}
 
-	m.LUN = lun
-	return nil
+	router.Use(func(c *gin.Context) {
+		if sessionKey, ok := c.Request.Header["Sessionkey"]; ok && len(sessionKey) > 0 {
+			if _, ok := auth.Tokens[sessionKey[0]]; !ok {
+				c.AbortWithStatus(http.StatusUnauthorized)
+			}
+		}
+	})
+
+	router.NoRoute(func(c *gin.Context) {
+		c.String(400, "")
+	})
+
+	return router
 }
