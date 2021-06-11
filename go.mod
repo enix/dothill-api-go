@@ -18,7 +18,7 @@
 // Alexandre Buisine <alexandre.buisine@enix.fr>
 // Joe Skazinski <joseph.skazinski@seagate.com>
 
-module github.com/enix/dothill-api-go
+module github.com/enix/dothill-api-go/v2
 
 go 1.12
 

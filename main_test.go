@@ -29,7 +29,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/enix/dothill-api-go/internal/mock"
+	"github.com/enix/dothill-api-go/v2/internal/mock"
 	. "github.com/onsi/gomega"
 )
 

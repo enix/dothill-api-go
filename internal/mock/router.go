@@ -23,7 +23,7 @@ package mock
 import (
 	"net/http"
 
-	"github.com/enix/dothill-api-go/internal/mock/controllers"
+	"github.com/enix/dothill-api-go/v2/internal/mock/controllers"
 	"github.com/gin-gonic/gin"
 )
 
