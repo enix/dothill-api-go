@@ -95,7 +95,7 @@ func (client *Client) request(req *Request) (*Response, *ResponseStatus, error) 
 	}
 
 	raw, code, err := req.execute(client)
-	if code == 401 && !isLoginReq {
+	if (code == 401 || code == 403) && !isLoginReq {
 		klog.V(1).Info("session key may have expired, trying to re-login")
 		err = client.Login()
 		if err != nil {
