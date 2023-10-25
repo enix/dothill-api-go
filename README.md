@@ -1,3 +1,7 @@
+|❗ Warning |
+|:----------|
+|As of 2023/01, this project is no longer maintained by Enix and Seagate as take over the project. We archived the repository and we invite you to join this project [Seagate/seagate-exos-x-csi](https://github.com/Seagate/seagate-exos-x-csi).|
+
 # dothill-api-go
 
 [![Build status](https://gitlab.com/enix.io/dothill-api-go/badges/master/pipeline.svg)](https://gitlab.com/enix.io/dothill-api-go/-/pipelines)
